@@ -32,7 +32,20 @@ intro <- tabPanel(
 )
 # Irene's Page (?)
 page_one <- tabPanel(
-  "Page 1" # Page 1 content here, change title as needed
+  "Enrollment K-12", # enrollment of grades from K-12 by year
+  
+  sidebarPanel(
+    #change the year to change the graph - set the min and max to the earliest and most recent years. set the value to the most recent?
+    sliderInput("slideryear", label = h3("Year"), min = min(education_df$YEAR), max = max(education_df$YEAR), value = max(education_df$YEAR), sep = "",
+                round = TRUE)
+    
+  ),
+  mainPanel(
+    #the funny graph goes here 
+    plotOutput("enroll_chart")
+    
+  )
+  
 )
 
 # Cody's Page
