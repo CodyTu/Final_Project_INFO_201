@@ -32,6 +32,7 @@ page_one <- tabPanel(
   "Page 1" # Page 1 content here, change title as needed
 )
 
+# Cody's Page
 page_two <- tabPanel(
   "Page 2" # Page 3 content here, change title as needed
 )
