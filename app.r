@@ -1,6 +1,9 @@
 library(shiny)
 library(dplyr)
 library(tidyverse)
+library(ggplot2)
+library(maps)
+
 
 # dataset
 education_df <- read.csv("states_all.csv")
@@ -34,7 +37,22 @@ page_one <- tabPanel(
 
 # Cody's Page
 page_two <- tabPanel(
-  "Page 2" # Page 3 content here, change title as needed
+  "Math Score",
+  h1("Highest Math Score in each State"),
+  sidebarLayout(
+    sidebarPanel(sliderInput(
+      inputId = "mathSlider",
+      label = "Select a year",
+      min = min(education_df$YEAR),
+      max = max(education_df$YEAR),
+      value = min(education_df$YEAR),
+      sep = "",
+      round = TRUE
+    )),
+    mainPanel(
+      plotOutput("map")
+    )
+  )
 )
 
 page_three <- tabPanel(
@@ -60,7 +78,22 @@ server <- function(input, output){
   
   
   # server elements for page 2
+  education_df <- mutate(
+    education_df,
+    polyname = tolower(STATE)
+  )
+  map_df <- map_data("state")
+  map_df <- mutate(
+    map_df,
+    polyname = region
+  )
+  merged_data = left_join(x = education_df, y = map_df, by = "polyname")
   
+  
+  
+  output$map <- renderPlot({
+    
+  })
   
   # server elements for page 3
 }
