@@ -5,7 +5,6 @@ intro <- tabPanel(
   titlePanel("Introduction")
 )
 
-
 page_one <- tabPanel(
   "Page 1" # Page 1 content here, change title as needed
 )
