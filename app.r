@@ -29,7 +29,19 @@ intro <- tabPanel(
 )
 # Irene's Page (?)
 page_one <- tabPanel(
-  "Page 1" # Page 1 content here, change title as needed
+  "Attendence of Grades from K-12 by Year", # attendance of grades from K-12 by year
+  
+  sidebarPanel(
+    #change the year to change the graph - set the min and max to the earliest and most recent years. set the value to the most recent?
+    sliderInput("slideryear", label = h3("Year"), min = 0, max = 100, value = 50)
+  
+  ),
+  mainPanel(
+    #the funny graph goes here 
+    
+    
+  )
+  
 )
 
 # Cody's Page
@@ -63,6 +75,8 @@ server <- function(input, output){
   
   
   # server elements for page 3
+  
+  
 }
 
 shinyApp(ui = ui, server = server)
