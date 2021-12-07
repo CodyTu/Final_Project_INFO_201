@@ -1,4 +1,11 @@
 library(shiny)
+library(dplyr)
+library(tidyverse)
+
+# dataset
+education_df <- read.csv("states_all.csv")
+
+
 
 intro <- tabPanel(
   "Introduction",
