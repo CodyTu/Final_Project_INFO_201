@@ -68,9 +68,25 @@ page_two <- tabPanel(
   )
 )
 
+# Jaspreet's Page
 page_three <- tabPanel(
-  "Page 3" # Page 3 content here, change title as needed
+  "Net Income",
+  h1("Net Income"),
+  sidebarLayout(
+    sidebarPanel(
+      radioButtons(
+        inputId = "Blue",
+        label = "Years",
+        choices = list("1900" = "yas",
+                       "2000" = "mah")
+      )
+    ),
+    mainPanel(
+      plotOutput("viz")
+    )
+  )
 )
+
 
 summary <- tabPanel(
   "Summary",
