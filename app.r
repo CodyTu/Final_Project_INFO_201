@@ -49,7 +49,7 @@ page_one <- tabPanel(
 
 # Cody's Page
 page_two <- tabPanel(
-  "Math Score",
+  "Average Score",
   h1("Highest Math Score in each State"),
   sidebarLayout(
     sidebarPanel(selectInput(
