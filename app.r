@@ -8,6 +8,14 @@ library(maps)
 # dataset
 education_df <- read.csv("states_all.csv")
 
+
+# map cleaning
+map_score_df <- education_df %>%
+  rename("Average 4th Grade Math Score" = AVG_MATH_4_SCORE,
+         "Average 8th Grade Math Score" = AVG_MATH_8_SCORE,
+         "Average 4th Grade Reading Score"= AVG_READING_4_SCORE,
+         "Average 8th Grade Reading Score" = AVG_READING_8_SCORE)
+
 # enrollment cleaning 
 enroll_df <- education_df %>%
   select(YEAR, STATE, GRADES_KG_G, GRADES_4_G, GRADES_8_G, GRADES_12_G)%>%
@@ -71,7 +79,7 @@ page_two <- tabPanel(
     sidebarPanel(selectInput(
       inputId = "scoreSelect",
       label = "Select a grade",
-      choices = colnames(education_df)[22:25]
+      choices = colnames(map_score_df)[22:25]
     )),
     mainPanel(
       plotlyOutput("map")
@@ -116,7 +124,7 @@ server <- function(input, output){
     states <- read.csv("https://raw.githubusercontent.com/jasonong/List-of-US-States/master/states.csv") %>% 
       mutate(STATE = toupper(State))
     
-    map_education_df <- inner_join(x = education_df, y = states, by = "STATE") %>%
+    map_education_df <- inner_join(x = map_score_df, y = states, by = "STATE") %>%
       select(YEAR, Abbreviation, avg_score = input$scoreSelect) %>%
       mutate(hover = paste0(Abbreviation, ",  Score: ", avg_score))
     
