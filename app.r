@@ -50,7 +50,7 @@ page_one <- tabPanel(
 # Cody's Page
 page_two <- tabPanel(
   "Average Score",
-  h1("Highest Math Score in each State"),
+  h1("Average Math or Reading Score in each State of 4th or 8th Grade"),
   sidebarLayout(
     sidebarPanel(selectInput(
       inputId = "scoreSelect",
