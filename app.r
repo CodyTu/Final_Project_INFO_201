@@ -32,17 +32,17 @@ intro <- tabPanel(
 # Irene's Page (?)
 page_one <- tabPanel(
   "Enrollment", # enrollment of grades from K-12 by year
-  
+  h1("Enrollment by Grade over the years"),
   sidebarPanel(
-    #change the year to change the graph - set the min and max to the earliest and most recent years. set the value to the most recent?
+   
     selectInput(inputId = "grade", 
                 label = "Select a Grade Year", 
                 choices = colnames(enroll_df)[2:5], 
-                selected = "Twelveth_Grade")
+                selected = "Twelfth_Grade")
     
   ),
   mainPanel(
-    #the funny graph goes here 
+   
     plotOutput("enroll_chart"),
   )
   
@@ -85,7 +85,7 @@ server <- function(input, output){
   # server elements for page 1
 
   output$value <- renderPrint({ input$select })
-      #making a new df lol
+
   enroll_df <- education_df %>%
     select(YEAR, STATE, GRADES_KG_G, GRADES_4_G, GRADES_8_G, GRADES_12_G)%>%
     group_by(YEAR)%>%
@@ -98,13 +98,13 @@ server <- function(input, output){
     rename(Kindergarten = GRADES_KG_G,
            Fourth_Grade = GRADES_4_G,
            Eighth_Grade = GRADES_8_G,
-           Twelveth_Grade = GRADES_12_G)
+           Twelfth_Grade = GRADES_12_G)
   
    
 
   
   
-  #code for the chart
+  
   output$enroll_chart <- renderPlot({
     ggplot(data=enroll_df) + 
       
