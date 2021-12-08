@@ -32,18 +32,19 @@ intro <- tabPanel(
 )
 # Irene's Page (?)
 page_one <- tabPanel(
-  "Enrollment K-12", # enrollment of grades from K-12 by year
+  "Enrollment", # enrollment of grades from K-12 by year
   
   sidebarPanel(
     #change the year to change the graph - set the min and max to the earliest and most recent years. set the value to the most recent?
-    sliderInput("slideryear", label = h3("Year"), min = min(education_df$YEAR), max = max(education_df$YEAR), value = max(education_df$YEAR), sep = "",
-                round = TRUE)
+    selectInput(inputId = "grade", 
+                label = "Select a Grade Year", 
+                choices = colnames(enroll_df)[2:5], 
+                selected = "Twelveth_Grade")
     
   ),
   mainPanel(
     #the funny graph goes here 
-    plotOutput("enroll_chart")
-    
+    plotOutput("enroll_chart"),
   )
   
 )
@@ -88,7 +89,37 @@ ui <- navbarPage(
 
 server <- function(input, output){
   # server elements for page 1
+
+  output$value <- renderPrint({ input$select })
+      #making a new df lol
+  enroll_df <- education_df %>%
+    select(YEAR, STATE, GRADES_KG_G, GRADES_4_G, GRADES_8_G, GRADES_12_G)%>%
+    group_by(YEAR)%>%
+    summarise(GRADES_KG_G = sum(GRADES_KG_G),
+              GRADES_4_G = sum(GRADES_4_G),
+              GRADES_8_G = sum(GRADES_8_G),
+              GRADES_12_G = sum(GRADES_12_G)
+    ) %>%
+    na.omit() %>%
+    rename(Kindergarten = GRADES_KG_G,
+           Fourth_Grade = GRADES_4_G,
+           Eighth_Grade = GRADES_8_G,
+           Twelveth_Grade = GRADES_12_G)
   
+   
+
+  
+  
+  #code for the chart
+  output$enroll_chart <- renderPlot({
+    ggplot(data=enroll_df) + 
+      
+      geom_path(aes(x=YEAR, y=.data[[as.character(input$grade)]], color = "Students"), size = 0.5) + 
+      xlim(min(education_df$YEAR), max(education_df$YEAR))+ ylim(0, 4000000)+
+      
+      labs(title="title", x="Year", y="Number of Students") 
+    
+  })
   
   # server elements for page 2
   education_df <- mutate(
