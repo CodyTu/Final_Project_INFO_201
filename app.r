@@ -8,6 +8,21 @@ library(maps)
 # dataset
 education_df <- read.csv("states_all.csv")
 
+# enrollment cleaning 
+enroll_df <- education_df %>%
+  select(YEAR, STATE, GRADES_KG_G, GRADES_4_G, GRADES_8_G, GRADES_12_G)%>%
+  group_by(YEAR)%>%
+  summarise(GRADES_KG_G = sum(GRADES_KG_G),
+            GRADES_4_G = sum(GRADES_4_G),
+            GRADES_8_G = sum(GRADES_8_G),
+            GRADES_12_G = sum(GRADES_12_G)
+  ) %>%
+  na.omit() %>%
+  rename(Kindergarten = GRADES_KG_G,
+         Fourth_Grade = GRADES_4_G,
+         Eighth_Grade = GRADES_8_G,
+         Twelfth_Grade = GRADES_12_G)
+
 
 intro <- tabPanel(
   "Introduction",
@@ -85,25 +100,6 @@ server <- function(input, output){
   # server elements for page 1
 
   output$value <- renderPrint({ input$select })
-
-  enroll_df <- education_df %>%
-    select(YEAR, STATE, GRADES_KG_G, GRADES_4_G, GRADES_8_G, GRADES_12_G)%>%
-    group_by(YEAR)%>%
-    summarise(GRADES_KG_G = sum(GRADES_KG_G),
-              GRADES_4_G = sum(GRADES_4_G),
-              GRADES_8_G = sum(GRADES_8_G),
-              GRADES_12_G = sum(GRADES_12_G)
-    ) %>%
-    na.omit() %>%
-    rename(Kindergarten = GRADES_KG_G,
-           Fourth_Grade = GRADES_4_G,
-           Eighth_Grade = GRADES_8_G,
-           Twelfth_Grade = GRADES_12_G)
-  
-   
-
-  
-  
   
   output$enroll_chart <- renderPlot({
     ggplot(data=enroll_df) + 
