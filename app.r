@@ -1,13 +1,12 @@
 library(shiny)
 library(dplyr)
 library(tidyverse)
-library(ggplot2)
+library(plotly)
 library(maps)
 
 
 # dataset
 education_df <- read.csv("states_all.csv")
-
 
 
 intro <- tabPanel(
@@ -50,23 +49,18 @@ page_one <- tabPanel(
 
 # Cody's Page
 page_two <- tabPanel(
-  "Math Score",
-  h1("Highest Math Score in each State"),
+  "Average Score",
+  h1("Average Math or Reading Score in each State of 4th or 8th Grade"),
   sidebarLayout(
-    sidebarPanel(sliderInput(
-      inputId = "mathSlider",
-      label = "Select a year",
-      min = min(education_df$YEAR),
-      max = max(education_df$YEAR),
-      value = min(education_df$YEAR),
-      sep = "",
-      round = TRUE
+    sidebarPanel(selectInput(
+      inputId = "scoreSelect",
+      label = "Select a grade",
+      choices = colnames(education_df)[22:25]
     )),
     mainPanel(
-      plotOutput("map")
-    )
+      plotlyOutput("map")
   )
-)
+))
 
 # Jaspreet's Page
 page_three <- tabPanel(
@@ -77,8 +71,9 @@ page_three <- tabPanel(
       radioButtons(
         inputId = "Blue",
         label = "Years",
-        choices = list("1900" = "yas",
-                       "2000" = "mah")
+        choices = colnames(education_df)
+        #choices = list("1900" = "yas",
+                       #"2000" = "mah")
       )
     ),
     mainPanel(
@@ -107,21 +102,33 @@ server <- function(input, output){
   
   
   # server elements for page 2
-  education_df <- mutate(
-    education_df,
-    polyname = tolower(STATE)
-  )
-  map_df <- map_data("state")
-  map_df <- mutate(
-    map_df,
-    polyname = region
-  )
-  merged_data = left_join(x = education_df, y = map_df, by = "polyname")
-  
-  
-  
-  output$map <- renderPlot({
+  output$map <- renderPlotly({
+    states <- read.csv("https://raw.githubusercontent.com/jasonong/List-of-US-States/master/states.csv") %>% 
+      mutate(STATE = toupper(State))
     
+    map_education_df <- inner_join(x = education_df, y = states, by = "STATE") %>%
+      select(YEAR, Abbreviation, avg_score = input$scoreSelect) %>%
+      mutate(hover = paste0(Abbreviation, ",  Score: ", avg_score))
+    
+    education_graph <- plot_geo(
+      map_education_df,
+      locationmode = "USA-states",
+      frame = ~YEAR
+    ) %>%
+      add_trace(
+        locations = ~Abbreviation,
+        z = ~avg_score,
+        zmin = min(map_education_df$avg_math, na.rm = TRUE),
+        zmax = max(map_education_df$avg_math, na.rm = TRUE),
+        color = ~avg_score,
+        colorscale = "Electric",
+        text = ~hover,
+        hoverinfo = "text"
+      ) %>%
+      layout(geo = list(scope = "usa"),
+             title = "Average Score Selected in the USA"
+             ) %>%
+      colorbar(title = "Average Score")
   })
   
   # server elements for page 3
