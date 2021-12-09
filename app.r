@@ -110,11 +110,34 @@ page_three <- tabPanel(
   h1("Schools Related Net Income Information by Year"),
   sidebarLayout(
     sidebarPanel(
-      radioButtons(
-        inputId = "Income",
-        label = "Income Information by Year",
-        choices = colnames(net_df)[2:4]
-      )
+      sliderInput("bins",
+                  "Years",
+                  min = 1,
+                  max = 12,
+                  value = 11
+      ),
+      #radioButtons(
+        #inputId = "Income",
+        #label = "Income Information by Year",
+        #choices = list("Total_Revenue" = revplot,
+                       #"Total_Expenditure" = explot,
+                       #"Net_Income" = netplot)
+      #)
+      hr(),
+      helpText(" 1 = 1993"),
+      helpText(" 2 = 1995"),
+      helpText(" 3 = 1997"),
+      helpText(" 4 = 1999"),
+      helpText(" 5 = 2001"),
+      helpText(" 6 = 2004"),
+      helpText(" 7 = 2006"),
+      helpText(" 8 = 2008"),
+      helpText(" 9 = 2010"),
+      helpText(" 10 = 2012"),
+      helpText(" 11 = 2014"),
+      helpText(" 12 = 2016"),
+      
+      
     ),
     mainPanel(
       plotOutput("viz"),
@@ -185,28 +208,29 @@ server <- function(input, output){
   # server elements for page 3
   output$viz <- renderPlot({
     
-    revplot <- ggplot(data = net_df, aes(y= Total_Revenue, x=YEAR)) + 
-      geom_bar (stat = "sum", fill=rgb(0, 0.9, 0, 0.6)) + 
-      xlab("Years") +
-      ylab("Total Revenue") +
-      ggtitle("Total Revenue by Year") +
-      theme_bw(base_size = 16)
+    #revplot <- ggplot(data = net_df, aes(y= Total_Revenue, x=YEAR)) + 
+      #geom_bar (stat = "sum", fill=rgb(0, 0.9, 0, 0.6)) + 
+      #xlab("Years") +
+      #ylab("Total Revenue") +
+      #ggtitle("Total Revenue by Year") +
+      #theme_bw(base_size = 16)
     
-    explot <- ggplot(data = net_df, aes(y= Total_Expenditure, x=YEAR)) + 
-      geom_bar (stat = "sum", fill=rgb(0.9, 0, 0, 0.6)) + 
-      xlab("Years") +
-      ylab("Total Expense")  +
-      ggtitle("Total Expense by Year") +
-      theme_bw(base_size = 16)
     
-    ggplot(data = net_df, aes(y= Net_Income, x=YEAR)) + 
-      geom_bar (stat = "sum", fill=rgb(0.1, 0.1, 0.9, 0.6)) + 
+   #ggplot(data = net_df, aes(y= Total_Expenditure, x=YEAR)) + 
+      #geom_bar (stat = "sum", fill=rgb(0.9, 0, 0, 0.6)) + 
+      #xlab("Years") +
+      #ylab("Total Expense")  +
+      #ggtitle("Total Expense by Year") +
+      #theme_bw(base_size = 16)
+    
+    ggplot(data = net_df, aes(y= Net_Income)) + 
+      geom_histogram (bins = input$bins , 
+                fill=rgb(0.1, 0.1, 0.9, 0.6)) + 
       xlab("Years") +
       ylab("Net Income") +
-      ggtitle("Net Income by Year") +
+      ggtitle("Change in Net Income by Year") +
       theme_bw(base_size = 16)
    
-    
     
   })
     
