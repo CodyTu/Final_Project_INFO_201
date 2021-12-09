@@ -3,6 +3,7 @@ library(dplyr)
 library(tidyverse)
 library(plotly)
 library(maps)
+#source("work.R")
 
 
 # dataset
@@ -29,6 +30,23 @@ intro <- tabPanel(
   further into race and gender. Titled U.S. Education Datasets: Unification Project, the data is aggregated from multiple .gov sites, such as 
   The Nation's Report Card, The US Census Bureau, and the National Center for Education Statistics.")
 )
+            
+
+
+
+net_df <- education_df %>%
+  select(YEAR, STATE,  TOTAL_REVENUE, TOTAL_EXPENDITURE)%>%
+  group_by(YEAR)%>%
+  summarise(TOTAL_REVENUE = sum(TOTAL_REVENUE),
+            TOTAL_EXPENDITURE = sum(TOTAL_EXPENDITURE)
+        
+  ) %>%
+  na.omit() %>%
+  rename(Total_Revenue = TOTAL_REVENUE,
+         Total_Expenditure = TOTAL_EXPENDITURE) %>%
+  mutate(Net_Income = Total_Revenue - Total_Expenditure)
+         
+
 # Irene's Page (?)
 page_one <- tabPanel(
   "Enrollment", # enrollment of grades from K-12 by year
@@ -66,19 +84,17 @@ page_two <- tabPanel(
 # Jaspreet's Page
 page_three <- tabPanel(
   "Net Income",
-  h1("Net Income"),
+  h1("Schools Related Net Income Information by Year"),
   sidebarLayout(
     sidebarPanel(
       radioButtons(
-        inputId = "Blue",
-        label = "Years",
-        choices = colnames(education_df)
-        #choices = list("1900" = "yas",
-                       #"2000" = "mah")
+        inputId = "Income",
+        label = "Income Information by Year",
+        choices = colnames(net_df)[2:4]
       )
     ),
     mainPanel(
-      plotOutput("viz")
+      plotOutput("viz"),
     )
   )
 )
@@ -163,6 +179,36 @@ server <- function(input, output){
   })
   
   # server elements for page 3
+  output$viz <- renderPlot({
+    
+    revplot <- ggplot(data = net_df, aes(y= Total_Revenue, x=YEAR)) + 
+      geom_bar (stat = "sum", fill=rgb(0, 0.9, 0, 0.6)) + 
+      xlab("Years") +
+      ylab("Total Revenue") +
+      ggtitle("Total Revenue by Year") +
+      theme_bw(base_size = 16)
+    
+    explot <- ggplot(data = net_df, aes(y= Total_Expenditure, x=YEAR)) + 
+      geom_bar (stat = "sum", fill=rgb(0.9, 0, 0, 0.6)) + 
+      xlab("Years") +
+      ylab("Total Expense")  +
+      ggtitle("Total Expense by Year") +
+      theme_bw(base_size = 16)
+    
+    ggplot(data = net_df, aes(y= Net_Income, x=YEAR)) + 
+      geom_bar (stat = "sum", fill=rgb(0.1, 0.1, 0.9, 0.6)) + 
+      xlab("Years") +
+      ylab("Net Income") +
+      ggtitle("Net Income by Year") +
+      theme_bw(base_size = 16)
+   
+    
+    
+  })
+    
 }
+
+
+
 
 shinyApp(ui = ui, server = server)
