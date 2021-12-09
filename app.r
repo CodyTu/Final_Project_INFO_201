@@ -114,7 +114,7 @@ page_three <- tabPanel(
                   "Years",
                   min = 1,
                   max = 12,
-                  value = 11
+                  value = 10
       ),
       #radioButtons(
         #inputId = "Income",
@@ -223,6 +223,13 @@ server <- function(input, output){
       #ggtitle("Total Expense by Year") +
       #theme_bw(base_size = 16)
     
+    ggplot(data = net_df, aes(y= Net_Income, x=YEAR)) + 
+      geom_bar (stat = "sum", fill=rgb(0.1, 0.1, 0.9, 0.6)) + 
+      xlab("Years") +
+      ylab("Net Income") +
+      ggtitle("Net Income by Year") +
+      theme_bw(base_size = 16)
+    
     ggplot(data = net_df, aes(y= Net_Income)) + 
       geom_histogram (bins = input$bins , 
                 fill=rgb(0.1, 0.1, 0.9, 0.6)) + 
@@ -230,6 +237,8 @@ server <- function(input, output){
       ylab("Net Income") +
       ggtitle("Change in Net Income by Year") +
       theme_bw(base_size = 16)
+    
+  
    
     
   })
