@@ -7,7 +7,7 @@ library(maps)
 
 
 # dataset
-education_df <- read.csv("states_all.csv")
+education_df <- read.csv("https://raw.githubusercontent.com/CodyTu/Final_Project_INFO_201/main/states_all.csv")
 
 
 # map cleaning
@@ -36,7 +36,7 @@ enroll_df <- education_df %>%
 intro <- tabPanel(
   "Introduction",
   img("", src="https://th.bing.com/th/id/OIP.oEEcPnzQJgzlxI1DpoTduAHaBa?pid=ImgDet&rs=1"),
-  h2("Introduction"),
+  h1("Introduction"),
   p("In this project, we are interested in investigating the relationship between education and socioeconomic factors in the United States. We 
     are interested in this topic because there are many disparities in education quality and outcomes between different communities throughout 
     the US. We think that it may be valuable to use data to draw conclusions about the factors that that could cause or contribute
@@ -73,9 +73,10 @@ net_df <- education_df %>%
 # Irene's Page (?)
 page_one <- tabPanel(
   "Enrollment", # enrollment of grades from K-12 by year
-  h1("Enrollment by Grade over the years"),
+  h1("Enrollment by Grade Over Time"),
   sidebarPanel(
-   
+    p("This chart shows how many students have been enrolled in public schools in the US, displaying trends for each of the grades over time. "),
+    
     selectInput(inputId = "grade", 
                 label = "Select a Grade Year", 
                 choices = colnames(enroll_df)[2:5], 
@@ -94,7 +95,12 @@ page_two <- tabPanel(
   "Average Score",
   h1("Average Math or Reading Score in each State of 4th or 8th Grade"),
   sidebarLayout(
-    sidebarPanel(selectInput(
+    
+    sidebarPanel(
+      p("This chart maps out the average value of either reading scores or math scores of NAEP exams based on a user selection of 4th or 8th graders. 
+        The slider can also be used to select a year to be viewed."),
+      
+      selectInput(
       inputId = "scoreSelect",
       label = "Select a grade",
       choices = colnames(map_score_df)[22:25]
@@ -110,6 +116,9 @@ page_three <- tabPanel(
   h1("Schools Related Net Income Information by Year"),
   sidebarLayout(
     sidebarPanel(
+      p("The page shows a histogram bar chart that has the calculated net income from the total revenue and total expenditure also grouped by year, 
+        showing changes in net income by recorded year. "),
+      
       sliderInput("bins",
                   "Years",
                   min = 1,
@@ -141,6 +150,7 @@ page_three <- tabPanel(
     ),
     mainPanel(
       plotOutput("viz"),
+      plotOutput("bar")
     )
   )
 )
@@ -148,7 +158,22 @@ page_three <- tabPanel(
 
 summary <- tabPanel(
   "Summary",
-  titlePanel("Summary")
+  h1("Summary"),
+  p("In our analysis of the relationship between socioeconomic factors/funding and education statistics and outcomes, there are three main 
+    takeaways, one from each visualization."),
+  h3("Enrollment in American schools has increased steadily over the past few decades"),
+  p("In the charts showing the enrollment trends for students in kindergarten, fourth grade, eighth grade, and twelfth grade, all of them show
+    upward trends, pointing at an increase in enrollment in public schools. This emphasizes the significance of our investigation: as the number
+    of students in public schools increases over time, so does the urgency of understanding the relationships between funding and outcomes in our
+    public school system."),
+  h3("Northern states have higher standardized testing scores compared to the rest of the country"),
+  p("More northern states, especially those in the northeast, have higher averages of both reading and math scores than in other regions
+    of the country, such as the South which had the lowest averages. These disparities can be connected to differences in funding and 
+    socioeconomic factors between states, which may have complex roots that can be further studied."),
+  h3("Education funding has improved in recent years"),
+  p("In recent years, education revenue has changed from being lower than expenditure to more closely matching or exceeding expenditure. This
+    shows that funding for education has improved, as fewer states are underfunded. In the 1990s, a majority of states were spending much more than 
+    their revenue, while in more recent decades spending and revenue have become more balanced.")
 )
 
 ui <- navbarPage(
@@ -171,7 +196,7 @@ server <- function(input, output){
       geom_path(aes(x=YEAR, y=.data[[as.character(input$grade)]], color = "Students"), size = 0.5) + 
       xlim(min(education_df$YEAR), max(education_df$YEAR))+ ylim(0, 4000000)+
       
-      labs(title="title", x="Year", y="Number of Students") 
+      labs(x="Year", y="Number of Students") 
     
   })
   
@@ -206,6 +231,16 @@ server <- function(input, output){
   })
   
   # server elements for page 3
+  output$bar <- renderPlot({
+    ggplot(data = net_df, aes(y= Net_Income, x=YEAR)) + 
+    geom_bar (stat = "sum", fill=rgb(0.1, 0.1, 0.9, 0.6)) + 
+    xlab("Years") +
+    ylab("Net Income") +
+    ggtitle("Change in Net Income by Year") +
+    theme_bw(base_size = 16) +
+    theme(legend.position = "none")
+  })
+  
   output$viz <- renderPlot({
     
     #revplot <- ggplot(data = net_df, aes(y= Total_Revenue, x=YEAR)) + 
@@ -223,12 +258,12 @@ server <- function(input, output){
       #ggtitle("Total Expense by Year") +
       #theme_bw(base_size = 16)
     
-    ggplot(data = net_df, aes(y= Net_Income, x=YEAR)) + 
-      geom_bar (stat = "sum", fill=rgb(0.1, 0.1, 0.9, 0.6)) + 
-      xlab("Years") +
-      ylab("Net Income") +
-      ggtitle("Net Income by Year") +
-      theme_bw(base_size = 16)
+    #ggplot(data = net_df, aes(y= Net_Income, x=YEAR)) + 
+      #geom_bar (stat = "sum", fill=rgb(0.1, 0.1, 0.9, 0.6)) + 
+      #xlab("Years") +
+      #ylab("Net Income") +
+      #ggtitle("Net Income by Year") +
+      #theme_bw(base_size = 16)
     
     ggplot(data = net_df, aes(y= Net_Income)) + 
       geom_histogram (bins = input$bins , 
@@ -237,9 +272,6 @@ server <- function(input, output){
       ylab("Net Income") +
       ggtitle("Change in Net Income by Year") +
       theme_bw(base_size = 16)
-    
-  
-   
     
   })
     
